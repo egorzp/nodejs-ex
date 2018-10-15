@@ -8,10 +8,12 @@ var express = require('express'),
       publicKey : 'BHLDLVj8bB0NaoqR_3_OYLZqBXdZjNgDGSwl4BsPDqmJdEr5Ycus8aXgAVNX2LMNMLlIvFbNmus5031TFJAm0hg',
       privateKey : 'zKBAezmTXago9S2eBtKT_66_hWiUXELm3wsBZoqoSaQ'
   }
+const bodyParser = require('body-parser');
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'));
+app.use(bodyParser.json());
 
 app.use(cors());
 webpush.setVapidDetails(
