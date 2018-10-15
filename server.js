@@ -121,6 +121,8 @@ app.get('/send',
             icon: 'assets/icons/icon.png'
           }
       }
+      console.log('DEBUG:: subscriptions', subscriptions);
+      
       Promise.all(subscriptions.map(sub => webpush.sendNotification(
           sub, JSON.stringify(notificationPayload) )))
           .then(() => res.status(200).json({message: 'Newsletter sent successfully.'}))
