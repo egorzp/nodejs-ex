@@ -107,7 +107,9 @@ app.get('/', function (req, res) {
   }
 });
 
-app.post('/subscribe', function (req, res) {
+app.post('/subscribe', (req, res) => {
+  console.log('DEBUG:: req.body', req.body);
+  
   subscriptions.push(req.body)
   res.status(200).json({message: "Subscription added successfully."});
 });
