@@ -3,7 +3,7 @@ var express = require('express'),
     app     = express(),
     morgan  = require('morgan');
     const webpush = require('web-push');
-
+    var cors = require('cors');
     const vapidKeys = {
       publicKey : 'BHLDLVj8bB0NaoqR_3_OYLZqBXdZjNgDGSwl4BsPDqmJdEr5Ycus8aXgAVNX2LMNMLlIvFbNmus5031TFJAm0hg',
       privateKey : 'zKBAezmTXago9S2eBtKT_66_hWiUXELm3wsBZoqoSaQ'
@@ -11,7 +11,9 @@ var express = require('express'),
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
-app.use(morgan('combined'))
+app.use(morgan('combined'));
+
+app.use(cors());
 webpush.setVapidDetails(
   'mailto:eromanenko@s-pro.io',
   vapidKeys.publicKey,
