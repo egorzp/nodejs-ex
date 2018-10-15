@@ -2,12 +2,23 @@
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan');
-    
+    const webpush = require('web-push');
+
+    const vapidKeys = {
+      publicKey : 'BHLDLVj8bB0NaoqR_3_OYLZqBXdZjNgDGSwl4BsPDqmJdEr5Ycus8aXgAVNX2LMNMLlIvFbNmus5031TFJAm0hg',
+      privateKey : 'zKBAezmTXago9S2eBtKT_66_hWiUXELm3wsBZoqoSaQ'
+  }
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
+webpush.setVapidDetails(
+  'mailto:eromanenko@s-pro.io',
+  vapidKeys.publicKey,
+  vapidKeys.privateKey
+);
 
+const subscriptions = [];
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
@@ -93,6 +104,30 @@ app.get('/', function (req, res) {
     res.render('index.html', { pageCountMessage : null});
   }
 });
+
+app.post('/subscribe', function (req, res) {
+  subscriptions.push(req.body)
+  res.status(200).json({message: "Subscription added successfully."});
+});
+
+app.get('/send',
+  (req, res) => {
+      const notificationPayload = {
+          notification: {
+            title: 'New Notification',
+            body: 'This is the body of the notification',
+            icon: 'assets/icons/icon.png'
+          }
+      }
+      Promise.all(subscriptions.map(sub => webpush.sendNotification(
+          sub, JSON.stringify(notificationPayload) )))
+          .then(() => res.status(200).json({message: 'Newsletter sent successfully.'}))
+          .catch(err => {
+              console.error("Error sending notification, reason: ", err);
+              res.sendStatus(500);
+          });
+  }
+);
 
 app.get('/pagecount', function (req, res) {
   // try to initialize the db on every request if it's not already
